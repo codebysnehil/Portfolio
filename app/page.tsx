@@ -1,8 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useInView } from "framer-motion";
-import SilkBackground from "./SilkBackground";
 import HeroSection from "./components/HeroSection";
 import ExperienceSection from "./components/ExperienceSection";
 import SkillsSection from "./components/SkillsSection";
