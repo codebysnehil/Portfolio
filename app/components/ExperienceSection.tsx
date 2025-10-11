@@ -90,7 +90,9 @@ const ExperienceCard: React.FC<{ exp: Experience; index: number; isInView: boole
   isInView,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  
   const cardRef = useRef<HTMLDivElement>(null);
+  
 
   return (
     <motion.div
@@ -284,6 +286,19 @@ const ExperienceCard: React.FC<{ exp: Experience; index: number; isInView: boole
 const ExperienceSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
+  const [downloading, setDownloading] = useState(false);
+  const handleDownload = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  
+    setDownloading(true);
+  
+    const link = document.createElement("a");
+    link.href = process.env.NEXT_PUBLIC_RESUME_URL!;
+    link.download = "Snehil_Resume.pdf";
+    link.click();
+  
+    setTimeout(() => setDownloading(false), 2000);
+  };
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -364,32 +379,52 @@ const ExperienceSection: React.FC = () => {
           transition={{ delay: 1.2 }}
           className="text-center mt-16 sm:mt-20"
         >
-          <motion.button
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="group relative overflow-hidden px-8 py-4 rounded-2xl shadow-2xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600" />
-            <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-green-600 to-emerald-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-              animate={{ x: ["-100%", "200%"] }}
-              transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
-            />
-            <span className="relative z-10 flex items-center gap-3 text-white font-bold text-base sm:text-lg">
-              <span>Download Resume</span>
-              <motion.svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                animate={{ y: [0, 3, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </motion.svg>
-            </span>
-          </motion.button>
+           <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleDownload}
+                className={`group relative overflow-hidden px-8 py-4 rounded-2xl shadow-2xl transition-colors duration-300 ${
+                    downloading ? "bg-emerald-800" : ""
+                }`}
+                >
+                {/* Main Gradient (hidden when downloading) */}
+                {!downloading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600" />
+                )}
+                
+                {/* Hover Glow */}
+                <div
+                    className={`absolute inset-0 bg-gradient-to-r from-green-600 via-green-600 to-emerald-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 ${
+                    downloading ? "opacity-20" : ""
+                    }`}
+                />
+                
+                {/* Animated Shine */}
+                {!downloading && (
+                    <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
+                    />
+                )}
+
+                {/* Button Text */}
+                <span className="relative z-10 flex items-center gap-3 font-bold text-base sm:text-lg text-white">
+                    {downloading ? (
+                    <>
+                        <span>Downloading</span>
+                        {/* Loader Circle */}
+                        <motion.span
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                        />
+                    </>
+                    ) : (
+                    "Download Resume"
+                    )}
+                </span>
+                </motion.button>
         </motion.div>
       </div>
     </section>
