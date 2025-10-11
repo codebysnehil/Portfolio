@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import HeroSection from "./components/HeroSection";
@@ -8,8 +9,7 @@ import ProjectsSection from "./components/ProjectsSection";
 import TestimonialsSection from "./components/TestimonialSection";
 import ContactSection from "./components/ContactSection";
 
-
-// Magnetic Button Component for Footer
+// 🧲 Magnetic Button Component for Footer
 interface MouseEvent {
   clientX: number;
   clientY: number;
@@ -64,107 +64,39 @@ const MagneticButton = ({
   );
 };
 
-// Premium Animated Background
-// const PremiumBackground = () => {
-//   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+// 💫 Type Definition for Floating Orbs
+interface Orb {
+  width: number;
+  height: number;
+  left: string;
+  top: string;
+  bg: string;
+  x: number[];
+  y: number[];
+  scale: number[];
+  duration: number;
+  delay: number;
+}
 
-//   useEffect(() => {
-//     const updateMousePosition = (e: MouseEvent) => {
-//       setMousePosition({ x: e.clientX, y: e.clientY });
-//     };
-//     window.addEventListener("mousemove", updateMousePosition);
-//     return () => window.removeEventListener("mousemove", updateMousePosition);
-//   }, []);
-
-//   return (
-//     <div className="fixed inset-0 -z-10 overflow-hidden">
-//       {/* Dynamic gradient background */}
-//       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950" />
-
-//       {/* Mouse-following premium gradient - hidden on mobile for performance */}
-//       <motion.div
-//         className="absolute inset-0 opacity-30 hidden md:block"
-//         style={{
-//           background: `radial-gradient(circle 800px at ${mousePosition.x}px ${mousePosition.y}px, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 25%, rgba(16, 185, 129, 0.05) 50%, transparent 80%)`,
-//         }}
-//       />
-
-//       {/* Floating orbs - reduced on mobile */}
-//       {[...Array(window.innerWidth < 768 ? 4 : 8)].map((_, i) => (
-//         <motion.div
-//           key={i}
-//           className="absolute rounded-full blur-xl opacity-20"
-//           style={{
-//             width: `${
-//               Math.random() * (window.innerWidth < 768 ? 150 : 300) + 100
-//             }px`,
-//             height: `${
-//               Math.random() * (window.innerWidth < 768 ? 150 : 300) + 100
-//             }px`,
-//             left: `${Math.random() * 100}%`,
-//             top: `${Math.random() * 100}%`,
-//             background: `linear-gradient(45deg, ${
-//               ["#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444"][
-//                 Math.floor(Math.random() * 5)
-//               ]
-//             }, transparent)`,
-//           }}
-//           animate={{
-//             x: [0, Math.random() * 200 - 100, 0],
-//             y: [0, Math.random() * 200 - 100, 0],
-//             scale: [1, Math.random() * 0.5 + 0.5, 1],
-//           }}
-//           transition={{
-//             duration: Math.random() * 10 + 10,
-//             repeat: Infinity,
-//             delay: Math.random() * 5,
-//           }}
-//         />
-//       ))}
-
-//       {/* Premium grid overlay */}
-//       <div
-//         className="absolute inset-0 opacity-5"
-//         style={{
-//           backgroundImage: `
-//             linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
-//             linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
-//           `,
-//           backgroundSize: "60px 60px",
-//         }}
-//       />
-//     </div>
-//   );
-// };
-
+// 🌌 Premium Animated Background Component
 const PremiumBackground = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [orbs, setOrbs] = useState<
-    {
-      width: number;
-      height: number;
-      left: string;
-      top: string;
-      bg: string;
-      x: number[];
-      y: number[];
-      scale: number[];
-      duration: number;
-      delay: number;
-    }[]
-  >([]);
+  const [orbs, setOrbs] = useState<Orb[]>([]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return; // ✅ SSR safety
+
     // Track mouse position
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener("mousemove", updateMousePosition);
 
-    // Generate orbs only in browser
+    // Generate orbs
     const orbCount = window.innerWidth < 768 ? 4 : 8;
     const colors = ["#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
-    const generatedOrbs = Array.from({ length: orbCount }, () => {
+
+    const generatedOrbs: Orb[] = Array.from({ length: orbCount }, () => {
       const size = Math.random() * (window.innerWidth < 768 ? 150 : 300) + 100;
       return {
         width: size,
@@ -181,6 +113,7 @@ const PremiumBackground = () => {
         delay: Math.random() * 5,
       };
     });
+
     setOrbs(generatedOrbs);
 
     return () => window.removeEventListener("mousemove", updateMousePosition);
@@ -200,7 +133,7 @@ const PremiumBackground = () => {
       />
 
       {/* Floating orbs */}
-      {orbs.map((orb: any, i: number) => (
+      {orbs.map((orb, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full blur-xl opacity-20"
@@ -235,14 +168,7 @@ const PremiumBackground = () => {
   );
 };
 
-// Revolutionary Hero Section - Enhanced for Mobile
-// Main Portfolio Component
-
-
-
-
-
-// Main Portfolio Component
+// 🏗️ Main Portfolio Component
 export default function Portfolio() {
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden relative">
@@ -256,7 +182,7 @@ export default function Portfolio() {
         <ContactSection />
       </div>
 
-      {/* Premium Footer */}
+      {/* 🌟 Premium Footer */}
       <footer className="relative py-12 px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
