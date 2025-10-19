@@ -22,7 +22,7 @@ interface Experience {
 const experiences: Experience[] = [
   {
     company: "LENS Corporation",
-    role: "Senior Full-Stack Engineer",
+    role: "Software Engineer (Full-Stack)",
     period: "Jan 2025 – Present",
     logo: "/lens.png",
     description:
@@ -53,7 +53,7 @@ const experiences: Experience[] = [
   },
   {
     company: "Stockarea",
-    role: "Backend Engineering Lead",
+    role: "Software Engineer (Backend)",
     period: "2023 – 2024",
     logo: "/sa.png",
     description:
@@ -74,7 +74,7 @@ const experiences: Experience[] = [
       "React",
       "Kafka",
     ],
-    color: "from-red-300 via-red-600 to-red-800",
+    color: "from-red-200 via-red-200 to-red-300",
     impact: "Enterprise Logistics Platform",
     metrics: [
       { label: "Facilities", value: "100+" },
