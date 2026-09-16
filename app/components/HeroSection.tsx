@@ -1,501 +1,413 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 
-const ROTATING = ["Systems", "Products", "Experiences", "Scale"];
+const MARQUEE = [
+  "Go",
+  "TypeScript",
+  "Next.js",
+  "Python",
+  "Claude API",
+  "AI Agents",
+  "MCP",
+  "RAG Pipelines",
+  "PostgreSQL",
+  "Redis",
+  "Kafka",
+  "AWS",
+  "Docker",
+  "Kubernetes",
+  "System Design",
+];
 
-// Magnetic button hook
-function useMagnetic(strength = 0.3) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 20 });
-  const sy = useSpring(y, { stiffness: 200, damping: 20 });
+const STATS = [
+  { value: "2+", label: "Years experience" },
+  { value: "6", label: "Shipped projects" },
+  { value: "10K+", label: "Concurrent users served" },
+  { value: "<100ms", label: "Latency systems" },
+];
 
-  const onMove = (e: React.MouseEvent) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    x.set((e.clientX - r.left - r.width / 2) * strength);
-    y.set((e.clientY - r.top - r.height / 2) * strength);
-  };
-  const onLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return { ref, sx, sy, onMove, onLeave };
-}
-
-function MagneticButton({
-  children,
-  onClick,
-  variant = "primary",
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "ghost";
-}) {
-  const { ref, sx, sy, onMove, onLeave } = useMagnetic(0.25);
-  return (
-    <motion.button
-      ref={ref}
-      style={{ x: sx, y: sy }}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      onClick={onClick}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      className={
-        variant === "primary"
-          ? "group relative px-9 py-4 overflow-hidden rounded-full font-semibold text-sm uppercase tracking-[0.2em] text-black"
-          : "group relative px-9 py-4 rounded-full font-semibold text-sm uppercase tracking-[0.2em] text-white border border-white/20 hover:border-white/50 transition-colors duration-300"
-      }
-    >
-      {variant === "primary" && (
-        <>
-          <span className="absolute inset-0 bg-[#e8ff4a]" />
-          <span className="absolute inset-0 bg-white scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
-        </>
-      )}
-      <span className="relative z-10">{children}</span>
-    </motion.button>
-  );
-}
-
-// Noise SVG filter for grain texture
-const GrainFilter = () => (
-  <svg className="hidden">
-    <defs>
-      <filter id="grain">
-        <feTurbulence
-          type="fractalNoise"
-          baseFrequency="0.65"
-          numOctaves="3"
-          stitchTiles="stitch"
-        />
-        <feColorMatrix type="saturate" values="0" />
-        <feBlend in="SourceGraphic" mode="multiply" />
-      </filter>
-    </defs>
-  </svg>
-);
-
-// Animated counter
-function Counter({ to, delay = 0 }: { to: number; delay?: number }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      let start = 0;
-      const step = Math.ceil(to / 30);
-      const t = setInterval(() => {
-        start = Math.min(start + step, to);
-        setVal(start);
-        if (start >= to) clearInterval(t);
-      }, 40);
-    }, delay);
-    return () => clearTimeout(timeout);
-  }, [to, delay]);
-  return <>{val}</>;
-}
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] as const },
+});
 
 export default function HeroSection() {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const t = setInterval(
-      () => setWordIndex((i) => (i + 1) % ROTATING.length),
-      2400,
-    );
-    return () => clearInterval(t);
-  });
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const r = containerRef.current.getBoundingClientRect();
-      setMousePos({
-        x: (e.clientX - r.left) / r.width,
-        y: (e.clientY - r.top) / r.height,
-      });
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  const scrollTo = (id: string) => {
-    document
-      .querySelector(id)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const parallaxX = useMotionValue(0);
-  const parallaxY = useMotionValue(0);
-
-  // FIX: include parallaxX and parallaxY in deps to satisfy react-hooks/exhaustive-deps
-  useEffect(() => {
-    parallaxX.set((mousePos.x - 0.5) * 30);
-    parallaxY.set((mousePos.y - 0.5) * 20);
-  }, [mousePos, parallaxX, parallaxY]);
+  const scrollTo = (id: string) =>
+    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap');
-
-        :root {
-          --yellow: #e8ff4a;
-          --yellow-dim: #c8df2a;
-          --bg: #0a0a08;
-          --bg2: #111110;
-          --text: #f0ede6;
-          --muted: #6b6860;
-          --border: rgba(255,255,255,0.08);
-        }
-
-        .hero-font-display { font-family: 'DM Serif Display', serif; }
-        .hero-font-body { font-family: 'Syne', sans-serif; }
-
-        .hero-grain::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-          background-repeat: repeat;
-          background-size: 128px 128px;
-          pointer-events: none;
-          opacity: 0.4;
-          mix-blend-mode: overlay;
-          z-index: 1;
-        }
-
-        .rotating-word {
-          display: inline-block;
+        .hero {
           position: relative;
-        }
-
-        .word-enter {
-          animation: wordIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
-        }
-        .word-exit {
-          animation: wordOut 0.4s cubic-bezier(0.7,0,1,1) both;
-        }
-
-        @keyframes wordIn {
-          from { opacity: 0; transform: translateY(60%) skewY(4deg); clip-path: inset(0 0 100% 0); }
-          to   { opacity: 1; transform: translateY(0) skewY(0deg); clip-path: inset(0 0 0% 0); }
-        }
-        @keyframes wordOut {
-          from { opacity: 1; transform: translateY(0); }
-          to   { opacity: 0; transform: translateY(-50%); }
-        }
-
-        .line-reveal {
+          padding: 140px 0 0;
           overflow: hidden;
+          border-bottom: 1px solid var(--border);
+          background:
+            radial-gradient(ellipse 900px 520px at 88% -10%, rgba(37,99,235,0.08), transparent),
+            radial-gradient(ellipse 600px 400px at 0% 110%, rgba(37,99,235,0.04), transparent),
+            var(--bg);
         }
-
-        .tag-pill {
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1.12fr 0.88fr;
+          gap: 56px;
+          align-items: center;
+        }
+        .hero-name {
+          font-family: var(--font-body), sans-serif;
+          font-size: clamp(2.9rem, 6.4vw, 4.7rem);
+          font-weight: 800;
+          letter-spacing: -0.045em;
+          line-height: 1.0;
+          color: var(--text);
+          margin: 0 0 14px;
+        }
+        .hero-name em {
+          font-style: normal;
+          background: linear-gradient(120deg, #2563eb, #7c3aed);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+        .hero-role {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 100px;
-          border: 1px solid rgba(232,255,74,0.25);
-          background: rgba(232,255,74,0.07);
-          color: var(--yellow);
-          font-size: 12px;
+          gap: 12px;
+          font-family: var(--font-mono), monospace;
+          font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          color: var(--text);
+          margin: 0 0 22px;
+        }
+        .hero-role__badge {
+          font-size: 11px;
           font-weight: 600;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          font-family: 'Syne', sans-serif;
+          color: var(--accent);
+          background: var(--accent-dim);
+          border: 1px solid rgba(37,99,235,0.2);
+          padding: 3px 10px;
+          border-radius: 6px;
+        }
+        .hero-lede {
+          font-size: clamp(1rem, 1.8vw, 1.15rem);
+          color: #3a3934;
+          line-height: 1.7;
+          max-width: 560px;
+          margin: 0 0 30px;
+          letter-spacing: -0.01em;
+        }
+        .hero-lede strong { color: var(--text); font-weight: 650; }
+        .hero-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
         }
 
-        .stat-bar {
-          width: 1px;
-          height: 40px;
-          background: linear-gradient(to bottom, transparent, var(--border), transparent);
-        }
-
-        .scroll-track {
-          width: 1px;
-          height: 60px;
-          background: var(--border);
-          position: relative;
+        /* ── Terminal card ── */
+        .term {
+          border-radius: 14px;
           overflow: hidden;
+          border: 1px solid rgba(17,17,17,0.14);
+          box-shadow: 0 24px 64px rgba(17,17,17,0.16), 0 2px 8px rgba(17,17,17,0.06);
+          background: #16161a;
+          font-family: var(--font-mono), monospace;
+          font-size: 12.5px;
+          line-height: 1.9;
+          transform: rotate(0.6deg);
         }
-        .scroll-track::after {
-          content: '';
-          position: absolute;
-          top: -100%;
-          left: 0;
-          width: 1px;
-          height: 100%;
-          background: var(--yellow);
-          animation: scrollLine 2s ease-in-out infinite;
+        .term__bar {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 11px 14px;
+          background: #1f1f24;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
         }
-        @keyframes scrollLine {
-          0%   { top: -100%; }
-          100% { top: 200%; }
+        .term__dot { width: 11px; height: 11px; border-radius: 50%; }
+        .term__title {
+          margin-left: 8px;
+          font-size: 11px;
+          color: rgba(255,255,255,0.4);
+          letter-spacing: 0.05em;
         }
+        .term__body { padding: 18px 20px 20px; }
+        .term__prompt { color: #60a5fa; }
+        .term__cmd { color: #e2e2df; }
+        .term__out { color: rgba(226,226,223,0.62); }
+        .term__accent { color: #a5f3a5; }
+        .term__tree { color: rgba(226,226,223,0.45); }
+        .term__cursor {
+          display: inline-block;
+          width: 8px; height: 15px;
+          background: #60a5fa;
+          vertical-align: text-bottom;
+          margin-left: 4px;
+          animation: term-blink 1.1s steps(1) infinite;
+        }
+        @keyframes term-blink { 50% { opacity: 0; } }
 
-        .marquee-wrap {
+        /* ── Stats ── */
+        .hero-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          border: 1px solid var(--border);
+          border-radius: 14px;
           overflow: hidden;
+          background: var(--surface);
+          box-shadow: 0 1px 2px rgba(17,17,17,0.05), 0 4px 16px rgba(17,17,17,0.04);
+          margin-top: 64px;
+        }
+        .hero-stat {
+          padding: 22px 24px;
+          border-right: 1px solid var(--border);
+          transition: background 0.2s;
+        }
+        .hero-stat:last-child { border-right: none; }
+        .hero-stat:hover { background: var(--surface-2); }
+        .hero-stat .metric__value { color: var(--accent); }
+
+        /* ── Marquee ── */
+        .marquee {
+          margin-top: 56px;
           border-top: 1px solid var(--border);
-          border-bottom: 1px solid var(--border);
+          overflow: hidden;
+          padding: 15px 0;
+          background: var(--surface);
         }
-        .marquee-track {
+        .marquee__track {
           display: flex;
           width: max-content;
-          animation: marquee 18s linear infinite;
-          gap: 0;
+          animation: marquee-scroll 28s linear infinite;
         }
-        @keyframes marquee {
+        .marquee:hover .marquee__track { animation-play-state: paused; }
+        .marquee__item {
+          font-family: var(--font-mono), monospace;
+          font-size: 11.5px;
+          font-weight: 500;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--faint);
+          padding: 0 26px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+        .marquee__sep { color: var(--accent); opacity: 0.55; margin-left: 52px; }
+        @keyframes marquee-scroll {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
 
-        .glow-text {
-          text-shadow: 0 0 80px rgba(232,255,74,0.3);
+        @media (max-width: 880px) {
+          .hero { padding-top: 120px; }
+          .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+          .term { transform: none; max-width: 480px; }
         }
-
-        .hero-dot::before {
-          content: '·';
-          color: var(--muted);
-          margin: 0 10px;
+        @media (max-width: 720px) {
+          .hero-stats { grid-template-columns: repeat(2, 1fr); }
+          .hero-stat:nth-child(2n) { border-right: none; }
+          .hero-stat:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
         }
       `}</style>
 
-      <GrainFilter />
-
-      <section
-        ref={containerRef}
-        className="hero-grain hero-font-body relative min-h-screen flex flex-col justify-between overflow-hidden"
-        style={{ background: "var(--bg)", color: "var(--text)" }}
-      >
-        {/* Layered background */}
-        <div className="absolute inset-0 z-0">
-          {/* Subtle gradient mesh */}
-          <motion.div
-            className="absolute w-[900px] h-[900px] rounded-full pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(232,255,74,0.04) 0%, transparent 70%)",
-              x: useSpring(
-                useTransform(useMotionValue(mousePos.x), [0, 1], [-80, 80]),
-                { stiffness: 60, damping: 15 },
-              ),
-              y: useSpring(
-                useTransform(useMotionValue(mousePos.y), [0, 1], [-60, 60]),
-                { stiffness: 60, damping: 15 },
-              ),
-              top: "10%",
-              right: "-10%",
-            }}
-          />
-          <div
-            className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(30,30,28,0.8) 0%, transparent 70%)",
-            }}
-          />
-          {/* Grid lines */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "linear-gradient(var(--text) 1px, transparent 1px), linear-gradient(90deg, var(--text) 1px, transparent 1px)",
-              backgroundSize: "80px 80px",
-            }}
-          />
-        </div>
-
-        {/* MAIN CONTENT */}
-        <div className="relative z-10 mt-10 flex flex-col justify-center flex-1 px-8 sm:px-12 xl:px-20 pt-8 pb-0">
-          {/* Hero headline */}
-          <div className="overflow-hidden mb-2">
-            <motion.div
-              initial={{ y: "110%" }}
-              animate={{ y: "0%" }}
-              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h1 className="hero-font-display font-normal text-[clamp(4rem,10vw,10rem)] leading-[0.9] tracking-[-0.02em] text-[var(--text)]">
-                I build
-              </h1>
-            </motion.div>
-          </div>
-
-          <div className="overflow-hidden mb-2">
-            <motion.div
-              initial={{ y: "110%" }}
-              animate={{ y: "0%" }}
-              transition={{ duration: 1, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h1 className="hero-font-display font-normal text-[clamp(4rem,10vw,10rem)] leading-[0.9] tracking-[-0.02em] italic text-[var(--yellow)] glow-text relative">
-                {ROTATING.map((word, i) => (
+      <section className="hero bg-grid">
+        <div className="container" style={{ position: "relative" }}>
+          <div className="hero-grid">
+            {/* LEFT — pitch */}
+            <div>
+              <motion.div
+                {...fadeUp(0)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  flexWrap: "wrap",
+                  marginBottom: "26px",
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "9px",
+                    padding: "7px 15px",
+                    borderRadius: "100px",
+                    border: "1px solid rgba(22,163,74,0.3)",
+                    background: "rgba(22,163,74,0.07)",
+                  }}
+                >
+                  <span className="status-dot" />
                   <span
-                    key={word}
-                    className={`${i === wordIndex ? "word-enter" : "word-exit"}`}
+                    className="mono"
                     style={{
-                      position: i === wordIndex ? "relative" : "absolute",
-                      left: 0,
-                      display:
-                        i === wordIndex ? "inline-block" : "inline-block",
-                      pointerEvents: i === wordIndex ? "auto" : "none",
-                      visibility: i === wordIndex ? "visible" : "hidden",
+                      fontSize: "11.5px",
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "#15803d",
                     }}
                   >
-                    {word}
+                    Available for work
                   </span>
-                ))}
-              </h1>
-            </motion.div>
-          </div>
+                </span>
+              </motion.div>
 
-          {/* FIX: "that scale." — apostrophe-free so no entity needed, but the period
-              was being picked up by the linter as a potential issue due to whitespace.
-              Wrapping in a fragment ensures clean parsing. */}
-          <div className="overflow-hidden mb-10">
-            <motion.div
-              initial={{ y: "110%" }}
-              animate={{ y: "0%" }}
-              transition={{ duration: 1, delay: 0.54, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h1 className="hero-font-display font-normal text-[clamp(4rem,10vw,10rem)] leading-[0.9] tracking-[-0.02em] text-[var(--text)]">
-                {"that scale."}
-              </h1>
-            </motion.div>
-          </div>
+              <motion.h1 {...fadeUp(0.05)} className="hero-name">
+                Snehil <em>Sharma.</em>
+              </motion.h1>
 
-          {/* Sub row */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 sm:gap-0"
-          >
-            {/* Description + CTA */}
-            <div className="max-w-md">
-              <div className="flex flex-wrap gap-4">
-                <MagneticButton
-                  onClick={() => scrollTo("#experience")}
-                  variant="primary"
+              <motion.div {...fadeUp(0.08)} className="hero-role">
+                <span className="hero-role__badge">Software Engineer</span>
+                Backend · Full-Stack · Systems at scale
+              </motion.div>
+
+              <motion.p {...fadeUp(0.1)} className="hero-lede">
+                I build <strong>backend systems</strong> and{" "}
+                <strong>full-stack products</strong> that hold up in production
+                — real-time video infrastructure at{" "}
+                <strong>LENS Corporation</strong> and nationwide logistics APIs.
+                With an AI background, I also ship{" "}
+                <strong>LLM-powered tools</strong> and agent workflows.
+              </motion.p>
+
+              <motion.div {...fadeUp(0.15)} className="hero-actions">
+                <button
+                  className="btn btn--primary"
+                  onClick={() => scrollTo("#projects")}
                 >
-                  View Work
-                </MagneticButton>
-                <MagneticButton
-                  onClick={() => scrollTo("#contact")}
-                  variant="ghost"
+                  View Projects ↓
+                </button>
+                <a
+                  className="btn btn--ghost"
+                  href={process.env.NEXT_PUBLIC_RESUME_URL || "#contact"}
                 >
-                  Get in Touch
-                </MagneticButton>
-              </div>
+                  Résumé
+                </a>
+                <div style={{ display: "flex", gap: "8px", marginLeft: "2px" }}>
+                  <a
+                    className="icon-link"
+                    href="https://github.com/codebysnehil"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="GitHub"
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                  </a>
+                  <a
+                    className="icon-link"
+                    href="https://www.linkedin.com/in/snehil-sharma-in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="LinkedIn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                  </a>
+                  <a
+                    className="icon-link"
+                    href="mailto:work.snehil01@gmail.com"
+                    title="Email"
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="m3 7 9 6 9-6" />
+                    </svg>
+                  </a>
+                </div>
+              </motion.div>
             </div>
 
-            {/* Stats */}
+            {/* RIGHT — terminal card */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.1 }}
-              className="flex items-center gap-8 sm:gap-12"
+              initial={{ opacity: 0, y: 18, rotate: 1.5 }}
+              animate={{ opacity: 1, y: 0, rotate: 0.6 }}
+              transition={{ duration: 0.55, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="term"
             >
-              <div className="text-center">
-                <div className="hero-font-display text-[2.5rem] leading-none text-[var(--yellow)]">
-                  <Counter to={2} delay={1100} />+
-                </div>
-                <div className="text-xs uppercase tracking-[0.15em] text-[var(--muted)] mt-1">
-                  Years
-                </div>
+              <div className="term__bar">
+                <span className="term__dot" style={{ background: "#ff5f57" }} />
+                <span className="term__dot" style={{ background: "#febc2e" }} />
+                <span className="term__dot" style={{ background: "#28c840" }} />
+                <span className="term__title">snehil@portfolio — zsh</span>
               </div>
-              <div className="stat-bar" />
-              <div className="text-center">
-                <div className="hero-font-display text-[2.5rem] leading-none text-[var(--text)]">
-                  <Counter to={5} delay={1200} />+
+              <div className="term__body">
+                <div>
+                  <span className="term__prompt">$</span>{" "}
+                  <span className="term__cmd">whoami</span>
                 </div>
-                <div className="text-xs uppercase tracking-[0.15em] text-[var(--muted)] mt-1">
-                  Projects
+                <div className="term__out">
+                  Software Engineer — Backend &amp; Full-Stack
                 </div>
-              </div>
-              <div className="stat-bar" />
-              <div className="text-center">
-                <div className="hero-font-display text-[2.5rem] leading-none text-[var(--text)]">
-                  <Counter to={2} delay={1300} />
+                <div>
+                  <span className="term__prompt">$</span>{" "}
+                  <span className="term__cmd">current_role</span>
                 </div>
-                <div className="text-xs uppercase tracking-[0.15em] text-[var(--muted)] mt-1">
-                  Companies
+                <div className="term__out">
+                  Full-Stack @ LENS Corporation · 2025—now
+                </div>
+                <div>
+                  <span className="term__prompt">$</span>{" "}
+                  <span className="term__cmd">ls recent-work/</span>
+                </div>
+                <div className="term__out">
+                  <span className="term__tree">├─</span> realtime-video-infra{" "}
+                  <span className="term__tree">(&lt;100ms)</span>
+                </div>
+                <div className="term__out">
+                  <span className="term__tree">├─</span> agentic-workflows{" "}
+                  <span className="term__tree">(Claude API · MCP)</span>
+                </div>
+                <div className="term__out">
+                  <span className="term__tree">└─</span> rag-pipelines{" "}
+                  <span className="term__tree">(pgvector · 92% acc)</span>
+                </div>
+                <div>
+                  <span className="term__prompt">$</span>{" "}
+                  <span className="term__cmd">status</span>
+                </div>
+                <div>
+                  <span className="term__accent">●</span>{" "}
+                  <span className="term__out">
+                    open to new opportunities
+                  </span>
+                  <span className="term__cursor" />
                 </div>
               </div>
             </motion.div>
+          </div>
+
+          {/* Proof stats */}
+          <motion.div {...fadeUp(0.2)} className="hero-stats">
+            {STATS.map((s) => (
+              <div key={s.label} className="hero-stat metric">
+                <span className="metric__value">{s.value}</span>
+                <span className="metric__label">{s.label}</span>
+              </div>
+            ))}
           </motion.div>
         </div>
 
-        {/* MARQUEE TICKER */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3 }}
-          className="relative z-10 marquee-wrap mt-12 py-3"
-        >
-          <div className="marquee-track">
-            {[...Array(2)].map((_, rep) =>
-              [
-                "Go",
-                "TypeScript",
-                "React",
-                "PostgreSQL",
-                "Redis",
-                "Kubernetes",
-                "WebRTC",
-                "gRPC",
-                "Docker",
-                "AWS",
-                "System Design",
-                "API Architecture",
-              ].map((tech) => (
-                <span
-                  key={`${rep}-${tech}`}
-                  className="text-xs uppercase tracking-[0.25em] text-[var(--muted)] px-8 flex-shrink-0"
-                >
-                  {tech}
-                  <span className="ml-8 text-[var(--yellow)] opacity-40">
-                    ✦
-                  </span>
+        {/* Scrolling tech marquee — full bleed */}
+        <motion.div {...fadeUp(0.3)} className="marquee">
+          <div className="marquee__track">
+            {[0, 1].map((rep) =>
+              MARQUEE.map((t) => (
+                <span key={`${rep}-${t}`} className="marquee__item">
+                  {t}
+                  <span className="marquee__sep">✦</span>
                 </span>
               )),
             )}
-          </div>
-        </motion.div>
-
-        {/* BOTTOM BAR */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="relative z-10 flex justify-between items-center px-8 sm:px-12 xl:px-20 py-6 border-t border-[var(--border)]"
-        >
-          <div className="flex items-center gap-6 text-xs text-[var(--muted)] uppercase tracking-widest" />
-
-          {/* Scroll indicator */}
-          <div className="hidden sm:flex flex-col items-center gap-3">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] rotate-90 origin-center mb-4">
-              Scroll
-            </span>
-            <div className="scroll-track" />
-          </div>
-
-          <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
-            {["GitHub", "LinkedIn", "Twitter"].map((s) => (
-              <a
-                key={s}
-                href="#"
-                className="uppercase tracking-widest hover:text-[var(--yellow)] transition-colors duration-200"
-              >
-                {s}
-              </a>
-            ))}
           </div>
         </motion.div>
       </section>

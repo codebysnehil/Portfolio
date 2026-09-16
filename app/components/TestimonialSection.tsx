@@ -10,7 +10,6 @@ const testimonials = [
     author: "Alex Kumar",
     role: "Senior Developer",
     company: "FinTech Startup",
-    project: "TradeDash Pro dashboard",
   },
   {
     quote:
@@ -18,7 +17,6 @@ const testimonials = [
     author: "Maria Rodriguez",
     role: "Project Manager",
     company: "Tech Consulting Agency",
-    project: "Multiple web applications",
   },
   {
     quote:
@@ -26,7 +24,6 @@ const testimonials = [
     author: "James Thompson",
     role: "Tech Lead",
     company: "Local Startup",
-    project: "TaskFlow Manager development",
   },
 ];
 
@@ -35,70 +32,165 @@ export default function TestimonialsSection() {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const [active, setActive] = useState(0);
 
-  return (
-    <section
-      id="testimonials"
-      ref={ref}
-      className="relative py-24 sm:py-32 px-5 sm:px-8 bg-[var(--bg)]"
-    >
-      <div className="absolute inset-0 bg-grid-dark-dense pointer-events-none opacity-30" aria-hidden />
-      <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-16"
-        >
-          <p className="text-sm font-medium text-[var(--accent)] uppercase tracking-widest mb-3">
-            Testimonials
-          </p>
-          <h2 className="font-display font-extrabold text-4xl sm:text-5xl text-[var(--text)] tracking-tight">
-            What people say
-          </h2>
-        </motion.div>
+  const t = testimonials[active];
 
-        <div className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-8 sm:p-12 shadow-[var(--shadow-card)] overflow-hidden hover:border-[var(--border-hover)] transition-colors">
-          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--accent)] to-[var(--accent-secondary)]" />
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.3 }}
-              className="pl-4 sm:pl-6"
-            >
-              <blockquote className="text-xl sm:text-2xl font-medium text-[var(--text)] leading-relaxed mb-8">
-                &ldquo;{testimonials[active].quote}&rdquo;
-              </blockquote>
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="font-display font-bold text-[var(--text)]">{testimonials[active].author}</p>
-                  <p className="text-sm font-medium text-[var(--accent)]">{testimonials[active].role}</p>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    {testimonials[active].company} · {testimonials[active].project}
-                  </p>
+  return (
+    <>
+      <style>{`
+        .tst-card {
+          padding: clamp(28px, 5vw, 52px);
+          position: relative;
+        }
+        .tst-quote {
+          font-family: var(--font-body), sans-serif;
+          font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+          font-weight: 500;
+          letter-spacing: -0.02em;
+          color: rgba(23,23,23,0.88);
+          line-height: 1.55;
+          margin: 0 0 28px;
+        }
+        .tst-nav {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 20px;
+        }
+        .tst-dot {
+          width: 26px; height: 3px;
+          border-radius: 2px;
+          border: none;
+          padding: 0;
+          background: var(--border-bright);
+          cursor: pointer;
+          transition: all 0.25s ease;
+        }
+        .tst-dot--on { background: var(--accent); width: 42px; }
+        .tst-arrow {
+          width: 38px; height: 38px;
+          border-radius: 8px;
+          border: 1px solid var(--border);
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 14px;
+        }
+        .tst-arrow:hover {
+          border-color: rgba(37,99,235,0.4);
+          color: var(--accent);
+          background: var(--accent-dim);
+        }
+      `}</style>
+
+      <section id="testimonials" ref={ref} className="section">
+        <div className="container" style={{ maxWidth: "860px" }}>
+          <motion.div
+            className="section-head"
+            initial={{ opacity: 0, y: 12 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="eyebrow">
+              <span className="eyebrow__index">04</span> Testimonials
+            </div>
+            <h2 className="section-title">What people say</h2>
+          </motion.div>
+
+          <motion.div
+            className="card tst-card"
+            initial={{ opacity: 0, y: 12 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <blockquote className="tst-quote">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                    gap: "16px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-display), sans-serif",
+                        fontWeight: 600,
+                        fontSize: "15px",
+                        color: "var(--text)",
+                        margin: "0 0 3px",
+                      }}
+                    >
+                      {t.author}
+                    </p>
+                    <p
+                      className="mono"
+                      style={{
+                        fontSize: "11.5px",
+                        letterSpacing: "0.08em",
+                        color: "var(--faint)",
+                        margin: 0,
+                      }}
+                    >
+                      {t.role} · {t.company}
+                    </p>
+                  </div>
+                  <span
+                    className="mono"
+                    style={{ fontSize: "12px", color: "var(--faint)" }}
+                  >
+                    {String(active + 1).padStart(2, "0")} /{" "}
+                    {String(testimonials.length).padStart(2, "0")}
+                  </span>
                 </div>
-                <div className="flex gap-2">
-                  {testimonials.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setActive(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all ${
-                        i === active
-                          ? "bg-[var(--accent)] scale-110 shadow-[var(--glow-accent-sm)]"
-                          : "bg-[var(--border)] hover:bg-[var(--accent)]/50"
-                      }`}
-                      aria-label={`Go to testimonial ${i + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          <div className="tst-nav">
+            <div style={{ display: "flex", gap: "8px" }}>
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  className={`tst-dot ${i === active ? "tst-dot--on" : ""}`}
+                  onClick={() => setActive(i)}
+                  aria-label={`Testimonial ${i + 1}`}
+                />
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                className="tst-arrow"
+                onClick={() =>
+                  setActive((a) => (a - 1 + testimonials.length) % testimonials.length)
+                }
+                aria-label="Previous"
+              >
+                ←
+              </button>
+              <button
+                className="tst-arrow"
+                onClick={() => setActive((a) => (a + 1) % testimonials.length)}
+                aria-label="Next"
+              >
+                →
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
