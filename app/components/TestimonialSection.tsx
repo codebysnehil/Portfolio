@@ -7,7 +7,7 @@ const testimonials = [
   {
     quote:
       "Snehil consistently delivers high-quality code and shows great potential. His trading dashboard exceeded our expectations and our users love the intuitive interface.",
-    author: "Alex Kumar",
+    author: "Mohit Kumar",
     role: "Senior Developer",
     company: "FinTech Startup",
   },
@@ -21,9 +21,9 @@ const testimonials = [
   {
     quote:
       "Snehil has strong problem-solving skills and writes clean, maintainable code. He's someone I'd definitely want on my team for future projects.",
-    author: "James Thompson",
+    author: "Syad Nashir",
     role: "Tech Lead",
-    company: "Local Startup",
+    company: "Startup",
   },
 ];
 
@@ -46,7 +46,7 @@ export default function TestimonialsSection() {
           font-size: clamp(1.2rem, 2.4vw, 1.6rem);
           font-weight: 500;
           letter-spacing: -0.02em;
-          color: rgba(23,23,23,0.88);
+          color: var(--text);
           line-height: 1.55;
           margin: 0 0 28px;
         }
@@ -77,7 +77,7 @@ export default function TestimonialsSection() {
           font-size: 14px;
         }
         .tst-arrow:hover {
-          border-color: rgba(37,99,235,0.4);
+          border-color: rgba(79,140,255,0.4);
           color: var(--accent);
           background: var(--accent-dim);
         }
@@ -101,7 +101,11 @@ export default function TestimonialsSection() {
             className="card tst-card"
             initial={{ opacity: 0, y: 12 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.45, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              duration: 0.45,
+              delay: 0.15,
+              ease: [0.16, 1, 0.3, 1],
+            }}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -174,7 +178,9 @@ export default function TestimonialsSection() {
               <button
                 className="tst-arrow"
                 onClick={() =>
-                  setActive((a) => (a - 1 + testimonials.length) % testimonials.length)
+                  setActive(
+                    (a) => (a - 1 + testimonials.length) % testimonials.length,
+                  )
                 }
                 aria-label="Previous"
               >
