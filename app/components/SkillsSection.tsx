@@ -1,134 +1,44 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-
-interface SkillCategory {
-  title: string;
-  description: string;
-  wide?: boolean;
-  skills: string[];
-}
-
-const skillCategories: SkillCategory[] = [
-  {
-    title: "AI Engineering",
-    description: "Agents, LLMs & workflows",
-    wide: true,
-    skills: [
-      "Claude API & Anthropic SDK",
-      "Agentic Workflows",
-      "MCP & Tool Calling",
-      "RAG & Vector Search",
-      "Prompt Engineering & Evals",
-      "LangGraph",
-    ],
-  },
-  {
-    title: "Backend",
-    description: "Server-side & APIs",
-    skills: ["Go", "Node.js", "Python & FastAPI", "PostgreSQL", "Redis", "Kafka"],
-  },
-  {
-    title: "Frontend",
-    description: "Modern web",
-    skills: ["React & Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-  },
-  {
-    title: "Cloud & DevOps",
-    description: "Infrastructure",
-    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
-  },
-  {
-    title: "Architecture",
-    description: "Systems at scale",
-    skills: ["Microservices", "API Design", "Performance", "Security"],
-  },
-];
+import React from "react";
+import { skills } from "./data";
+import { Reveal, SectionLine } from "./Reveal";
 
 export default function SkillsSection() {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
-
   return (
     <>
       <style>{`
-        .sk-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
-        }
-        .sk-card {
-          padding: 26px 28px;
-        }
-        .sk-card--wide { grid-column: 1 / -1; }
-        .sk-card__head {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          gap: 12px;
-          margin-bottom: 18px;
-        }
-        .sk-card__title {
-          font-family: var(--font-display), sans-serif;
-          font-size: 1.25rem;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          color: var(--text);
-          margin: 0;
-        }
-        .sk-card__tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-        @media (max-width: 640px) {
-          .sk-grid { grid-template-columns: 1fr; }
-        }
+        .sk { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .sk__cell { padding: 26px 28px 28px; height: 100%; }
+        .sk__w { grid-column: span 2; }
+        .sk__w:nth-child(n+4) { grid-column: span 3; }
+        .sk__t { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; margin: 0; color: var(--text); }
+        .sk__s { font-family: var(--font-mono), monospace; font-size: 12px; color: var(--accent); margin: 4px 0 18px; }
+        .sk__l { display: flex; flex-wrap: wrap; gap: 8px; }
+        .sk__l .chip { font-size: 12.5px; padding: 5px 12px; transition: color .15s, border-color .15s; }
+        .sk__l .chip:hover { color: var(--text); border-color: var(--accent-border); }
+        @media (max-width: 900px) { .sk__w, .sk__w:nth-child(n+4) { grid-column: span 3; } .sk__w:last-child { grid-column: span 6; } }
+        @media (max-width: 640px) { .sk__w, .sk__w:nth-child(n+4), .sk__w:last-child { grid-column: span 6; } }
       `}</style>
 
-      <section id="skills" ref={ref} className="section">
+      <section id="skills" className="section">
+        <SectionLine />
         <div className="container">
-          <motion.div
-            className="section-head"
-            initial={{ opacity: 0, y: 12 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="eyebrow">
-              <span className="eyebrow__index">03</span> Skills &amp; Stack
-            </div>
+          <Reveal className="section-head">
+            <div className="eyebrow"><b>03</b> / stack</div>
             <h2 className="section-title">What I work with</h2>
-          </motion.div>
-
-          <div className="sk-grid">
-            {skillCategories.map((cat, i) => (
-              <motion.div
-                key={cat.title}
-                className={`card sk-card ${cat.wide ? "sk-card--wide" : ""}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{
-                  duration: 0.45,
-                  delay: 0.1 + i * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
-                <div className="sk-card__head">
-                  <h3 className="sk-card__title">{cat.title}</h3>
-                  <span className="mono-label">{cat.description}</span>
+          </Reveal>
+          <div className="sk">
+            {skills.map((s, idx) => (
+              <Reveal key={s.title} className="sk__w" delay={(idx % 3) * 0.08}>
+                <div className="sk__cell card card--ticks">
+                  <h3 className="sk__t">{s.title}</h3>
+                  <p className="sk__s">{s.sub}</p>
+                  <div className="sk__l">
+                    {s.items.map((i) => <span key={i} className="chip">{i}</span>)}
+                  </div>
                 </div>
-                <div className="sk-card__tags">
-                  {cat.skills.map((s) => (
-                    <span
-                      key={s}
-                      className={`chip ${cat.wide ? "chip--accent" : ""}`}
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
+              </Reveal>
             ))}
           </div>
         </div>

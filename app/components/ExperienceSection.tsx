@@ -1,233 +1,81 @@
 "use client";
 
-import React, { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-
-interface Experience {
-  company: string;
-  role: string;
-  period: string;
-  summary: string;
-  achievements: string[];
-  technologies: string[];
-  metrics: { label: string; value: string }[];
-}
-
-const experiences: Experience[] = [
-  {
-    company: "LENS Corporation",
-    role: "Software Engineer — Full-Stack",
-    period: "Jan 2025 — Present",
-    summary:
-      "Real-time video infrastructure: streaming systems powering thousands of concurrent streams with sub-100ms latency.",
-    achievements: [
-      "Engineered high-throughput Go backend achieving <100ms latency for live streaming at scale",
-      "Architected distributed API layer handling 10K+ concurrent connections with 99.9% uptime",
-      "Built cross-platform desktop applications with Electron and TypeScript",
-      "Implemented CI/CD pipelines, reducing deployment cycles by 70%",
-    ],
-    technologies: ["Go", "TypeScript", "Electron", "Next.js", "PostgreSQL", "AWS", "Kubernetes"],
-    metrics: [
-      { label: "Latency", value: "<100ms" },
-      { label: "Concurrent", value: "10K+" },
-      { label: "Uptime", value: "99.9%" },
-    ],
-  },
-  {
-    company: "Stockarea",
-    role: "Software Engineer — Backend",
-    period: "2024 — 2025",
-    summary:
-      "Backend architecture for India's largest digital warehousing network — 100+ facilities, millions of transactions daily.",
-    achievements: [
-      "Architected RESTful APIs powering a nationwide logistics network across 100+ warehouses",
-      "Optimized PostgreSQL queries and indexing for 60% faster response times",
-      "Designed microservices processing 1M+ daily transactions with zero data loss",
-      "Built real-time monitoring with automated alerting and incident response",
-    ],
-    technologies: ["Python", "FastAPI", "PostgreSQL", "Redis", "Kafka", "Docker", "AWS"],
-    metrics: [
-      { label: "Facilities", value: "100+" },
-      { label: "Daily txns", value: "1M+" },
-      { label: "Query speed", value: "+60%" },
-    ],
-  },
-];
+import React from "react";
+import { motion } from "framer-motion";
+import { jobs, RESUME_URL } from "./data";
+import { Reveal, SectionLine } from "./Reveal";
 
 export default function ExperienceSection() {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.08 });
-
   return (
     <>
       <style>{`
-        .xp-item {
-          display: grid;
-          grid-template-columns: 200px 1fr;
-          gap: 32px;
-          padding: 40px 0;
-          border-top: 1px solid var(--border);
-        }
-        .xp-item:last-of-type { border-bottom: 1px solid var(--border); }
-        .xp-period {
-          font-family: var(--font-mono), monospace;
-          font-size: 12px;
-          letter-spacing: 0.08em;
-          color: var(--faint);
-          padding-top: 4px;
-        }
-        .xp-company {
-          font-family: var(--font-mono), monospace;
-          font-size: 12px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--accent);
-          margin-bottom: 6px;
-        }
-        .xp-role {
-          font-family: var(--font-body), sans-serif;
-          font-size: clamp(1.3rem, 2.5vw, 1.7rem);
-          font-weight: 700;
-          letter-spacing: -0.02em;
-          color: var(--text);
-          margin: 0 0 10px;
-          line-height: 1.2;
-        }
-        .xp-summary {
-          font-size: 14.5px;
-          color: var(--muted);
-          line-height: 1.75;
-          margin: 0 0 18px;
-          max-width: 640px;
-        }
-        .xp-metrics {
-          display: flex;
-          gap: 36px;
-          flex-wrap: wrap;
-          margin-bottom: 20px;
-        }
-        .xp-bullets {
-          list-style: none;
-          padding: 0;
-          margin: 0 0 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 9px;
-        }
-        .xp-bullet {
-          display: flex;
-          gap: 12px;
-          align-items: flex-start;
-          font-size: 14px;
-          color: rgba(23,23,23,0.78);
-          line-height: 1.65;
-        }
-        .xp-bullet::before {
-          content: '→';
-          font-family: var(--font-mono), monospace;
-          color: var(--accent);
-          font-size: 12px;
-          flex-shrink: 0;
-          margin-top: 3px;
-        }
-        .xp-tech { display: flex; flex-wrap: wrap; gap: 7px; }
-        .xp-cta {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 20px;
-          margin-top: 48px;
-        }
-        @media (max-width: 720px) {
-          .xp-item { grid-template-columns: 1fr; gap: 12px; padding: 32px 0; }
-        }
+        .xp { display: grid; grid-template-columns: 200px 1fr; gap: 40px; padding: 32px; margin-bottom: 20px; }
+        .xp__meta { font-family: var(--font-mono), monospace; font-size: 13px; color: var(--faint); line-height: 1.7; }
+        .xp__logo { height: 24px; width: auto; display: block; margin-bottom: 14px; }
+        [data-theme="light"] .xp__logo { filter: invert(1) hue-rotate(180deg); }
+        .xp__role { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 4px; color: var(--text); }
+        .xp__co { color: var(--accent); font-size: 15px; margin: 0 0 14px; }
+        .xp__sum { color: var(--muted); font-size: 15.5px; line-height: 1.7; margin: 0 0 18px; max-width: 60ch; }
+        .xp__list { list-style: none; padding: 0; margin: 0 0 20px; display: grid; gap: 9px; }
+        .xp__list li { position: relative; padding-left: 20px; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
+        .xp__list li::before { content: "-"; position: absolute; left: 0; color: var(--accent); font-family: var(--font-mono), monospace; }
+        .xp__cta { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 22px 28px; }
+        .xp__cta p { margin: 0; color: var(--muted); font-size: 15px; }
+        .xp__cta b { color: var(--text); font-weight: 500; }
+        .xp__stack { display: flex; flex-wrap: wrap; gap: 6px; }
+        @media (max-width: 720px) { .xp { grid-template-columns: 1fr; gap: 18px; padding: 24px; } }
       `}</style>
 
-      <section id="experience" ref={ref} className="section">
+      <section id="experience" className="section">
+        <SectionLine />
         <div className="container">
-          <motion.div
-            className="section-head"
-            initial={{ opacity: 0, y: 12 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="eyebrow">
-              <span className="eyebrow__index">01</span> Experience
-            </div>
-            <div className="section-head__row">
-              <h2 className="section-title">Where I&apos;ve built things</h2>
-              <p className="section-sub" style={{ maxWidth: "360px" }}>
-                Two companies, one obsession — software that holds up under
-                real production load.
-              </p>
-            </div>
-          </motion.div>
+          <Reveal className="section-head">
+            <div className="eyebrow"><b>01</b> / experience</div>
+            <h2 className="section-title">Where I&apos;ve worked</h2>
+            <p className="section-sub">Two companies, one obsession: software that holds up under real production load.</p>
+          </Reveal>
 
           <div>
-            {experiences.map((xp, i) => (
+            {jobs.map((j, i) => (
               <motion.article
-                key={xp.company}
-                className="xp-item"
-                initial={{ opacity: 0, y: 12 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{
-                  duration: 0.45,
-                  delay: 0.15 + i * 0.12,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
+                key={j.company}
+                className="xp card card--ticks"
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="xp-period">{xp.period}</div>
+                <div className="xp__meta">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="xp__logo" src={j.logo} alt={j.company} />
+                  {j.period}
+                </div>
                 <div>
-                  <div className="xp-company">{xp.company}</div>
-                  <h3 className="xp-role">{xp.role}</h3>
-                  <p className="xp-summary">{xp.summary}</p>
-
-                  <div className="xp-metrics">
-                    {xp.metrics.map((m) => (
-                      <div key={m.label} className="metric">
-                        <span className="metric__value">{m.value}</span>
-                        <span className="metric__label">{m.label}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <ul className="xp-bullets">
-                    {xp.achievements.map((a) => (
-                      <li key={a} className="xp-bullet">
-                        {a}
-                      </li>
-                    ))}
+                  <h3 className="xp__role">{j.role}</h3>
+                  <p className="xp__co">{j.company}</p>
+                  <p className="xp__sum">{j.summary}</p>
+                  <ul className="xp__list">
+                    {j.points.map((p) => <li key={p}>{p}</li>)}
                   </ul>
-
-                  <div className="xp-tech">
-                    {xp.technologies.map((t) => (
-                      <span key={t} className="chip">
-                        {t}
-                      </span>
-                    ))}
+                  <div className="xp__stack">
+                    {j.stack.map((t) => <span key={t} className="chip">{t}</span>)}
                   </div>
                 </div>
               </motion.article>
             ))}
           </div>
 
-          <motion.div
-            className="xp-cta"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5, duration: 0.45 }}
-          >
-            <p style={{ color: "var(--muted)", fontSize: "14.5px", margin: 0 }}>
-              Want the full picture? Grab the résumé — one page, no fluff.
-            </p>
-            <a
-              className="btn btn--primary"
-              href={process.env.NEXT_PUBLIC_RESUME_URL || "#contact"}
-            >
-              ↓ Download Résumé
-            </a>
-          </motion.div>
+          {RESUME_URL && (
+            <Reveal delay={0.05}>
+              <div className="xp__cta card">
+                <p><b>Want the full picture?</b> Grab the résumé: one page, no fluff.</p>
+                <a className="btn btn--primary" href={RESUME_URL} target="_blank" rel="noopener noreferrer" download>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" /></svg>
+                  Download résumé
+                </a>
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
     </>

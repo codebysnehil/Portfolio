@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-body",
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-body-family",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const plexMono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  // TODO: replace with your deployed domain
-  metadataBase: new URL("https://snehilsharma.dev"),
+  metadataBase: new URL("https://www.devsnehil.com"),
   title: {
     default: "Snehil Sharma | Software Engineer",
     template: "%s | Snehil Sharma",
@@ -42,23 +42,13 @@ export const metadata: Metadata = {
     siteName: "Snehil Sharma",
     title: "Snehil Sharma | Software Engineer",
     description:
-      "Building scalable backend systems and full-stack products — real-time video infrastructure, logistics APIs, and LLM-powered tools.",
-    images: [
-      {
-        // TODO: add a 1200x630 og.png to /public
-        url: "/og.png",
-        width: 1200,
-        height: 630,
-        alt: "Snehil Sharma — Software Engineer",
-      },
-    ],
+      "Full-stack engineer working on real-time video infrastructure. Go, TypeScript, Next.js, PostgreSQL.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Snehil Sharma | Software Engineer",
     description:
-      "Building scalable backend systems and full-stack products — real-time video infrastructure, logistics APIs, and LLM-powered tools.",
-    images: ["/og.png"],
+      "Full-stack engineer working on real-time video infrastructure. Go, TypeScript, Next.js, PostgreSQL.",
   },
   robots: {
     index: true,
@@ -66,14 +56,37 @@ export const metadata: Metadata = {
   },
 };
 
+const themeInitScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("theme");
+    var theme = stored === "light" || stored === "dark"
+      ? stored
+      : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="antialiased">{children}</body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${plexSans.variable} ${plexMono.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="antialiased" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

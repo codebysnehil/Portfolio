@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
+import { RESUME_URL } from "./data";
 
 const LINKS = [
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Skills", href: "#skills" },
-  { label: "Testimonials", href: "#testimonials" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -61,27 +62,26 @@ export default function Navbar() {
           position: fixed;
           top: 0; left: 0; right: 0;
           z-index: 80;
-          transition: background 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
-          border-bottom: 1px solid transparent;
+          background: var(--nav-bg);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-bottom: 1px solid var(--border);
         }
-        .nav-root--scrolled {
-          background: rgba(251,251,250,0.85);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          border-bottom-color: var(--border);
-        }
+        .nav-root--scrolled { top: 0; }
         .nav-progress {
           position: absolute;
           bottom: -1px; left: 0;
           height: 1px;
           background: var(--accent);
+          transform-origin: left;
           transition: width 0.1s linear;
+          opacity: 1;
         }
         .nav-inner {
-          max-width: 1080px;
+          max-width: 1120px;
           margin: 0 auto;
           padding: 0 24px;
-          height: 68px;
+          height: 60px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -119,38 +119,38 @@ export default function Navbar() {
           font-family: var(--font-mono), monospace;
           font-size: 12px;
           font-weight: 500;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          letter-spacing: 0;
+          text-transform: none;
           color: var(--muted);
           background: none;
           border: none;
-          border-radius: 6px;
+          border-radius: var(--radius-xs);
           padding: 8px 12px;
           cursor: pointer;
           transition: color 0.18s, background 0.18s;
         }
-        .nav-link:hover { color: var(--text); background: rgba(17,17,17,0.05); }
+        .nav-link:hover { color: var(--text); background: var(--surface-2); }
         .nav-link--active { color: var(--accent); }
         .nav-cta {
           font-family: var(--font-body), sans-serif;
           font-size: 13px;
           font-weight: 600;
           letter-spacing: -0.01em;
-          color: #ffffff;
+          color: var(--ink-contrast);
           background: var(--ink);
           border: none;
-          border-radius: 9px;
+          border-radius: var(--radius-sm);
           padding: 9px 18px;
           cursor: pointer;
           transition: background 0.18s, transform 0.18s;
           text-decoration: none;
         }
-        .nav-cta:hover { background: #333330; transform: translateY(-1px); }
+        .nav-cta:hover { background: var(--ink-hover); transform: translateY(-1px); }
         .nav-burger {
           display: none;
           background: none;
           border: 1px solid var(--border);
-          border-radius: 7px;
+          border-radius: var(--radius-sm);
           width: 38px; height: 38px;
           cursor: pointer;
           color: var(--text);
@@ -162,7 +162,7 @@ export default function Navbar() {
           position: fixed;
           inset: 0;
           z-index: 79;
-          background: rgba(251,251,250,0.98);
+          background: var(--overlay-strong);
           backdrop-filter: blur(10px);
           display: flex;
           flex-direction: column;
@@ -216,12 +216,18 @@ export default function Navbar() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <a
-              className="nav-cta nav-cta--desktop"
-              href={process.env.NEXT_PUBLIC_RESUME_URL || "#contact"}
-            >
-              Résumé
-            </a>
+            <ThemeToggle />
+            {RESUME_URL && (
+              <a
+                className="nav-cta nav-cta--desktop"
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                Résumé ↓
+              </a>
+            )}
             <button
               className="nav-burger"
               onClick={() => setMenuOpen((o) => !o)}
@@ -253,6 +259,12 @@ export default function Navbar() {
                 {l.label}
               </button>
             ))}
+            {RESUME_URL && (
+              <a className="nav-mobile__link" href={RESUME_URL} target="_blank" rel="noopener noreferrer" download>
+                <span className="nav-mobile__idx">↓</span>
+                Résumé
+              </a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
